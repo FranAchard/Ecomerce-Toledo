@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose';
+import mongoose , { Schema } from 'mongoose';
 
 const schema = new Schema({
   marca: String,
@@ -6,17 +6,10 @@ const schema = new Schema({
   precioMin: Number,
   precio: Number,
   nombre: String,
+  categoria: String,
   presentacion: String,
   stock: Number
 });
-interface IProduct extends Document {
-  marca: string;
-  precioMax: number;
-  precioMin: number;
-  precio: number;
-  nombre: string;
-  presentacion: string;
-  stock: number;
-}
+const Product = mongoose.model('Product', schema)
 
-export default model<IProduct>('Product', schema);
+export default Product

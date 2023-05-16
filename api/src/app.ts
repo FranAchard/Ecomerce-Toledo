@@ -11,7 +11,7 @@ app.use(morgan('dev')) //para mostrar las peticiones en consola
 app.use(express.json())
 
 // routes
-app.use('/', router);
+app.use('/api', router);
 
 // this folder will be used to store images
 app.use('/uploads', express.static(path.resolve('uploads')))
