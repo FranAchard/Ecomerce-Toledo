@@ -24,7 +24,7 @@ export const getUsers = async (_req: Request, res: Response) => {
   }
 };
 
-// get user by id & get user vy email para login
+// get user by id & get user by email para login
 export const getUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   if (req.params.id) {
