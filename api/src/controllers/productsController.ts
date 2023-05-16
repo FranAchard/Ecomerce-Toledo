@@ -63,8 +63,6 @@ export function chargeOrUpdateDB(){
 }
 export async function getProducts (req: Request, res: Response) { 
   const { id } = req.params;
-  console.log('este es el id ->',id)
-  console.log("llego acá al controlador")
   try {
     if (id){
       const product = await Product.findById(id)
@@ -76,7 +74,34 @@ export async function getProducts (req: Request, res: Response) {
   } catch (error:any) {
     res.send({message: "something went wrong", detail: error.message})
   }
-  
 }
-
+export async function updateProduct (req: Request, res: Response) {
+  const { id } = req.params;
+  const { precioMax, precioMin, ingreso } = req.body;
+  try {
+    const product = await Product.findById(id)
+    if(product){
+      if(precioMax && precioMin){
+        product.precioMax = precioMax;
+        product.precioMin = precioMin;
+        product.precio = (precioMax + precioMin) / 2
+        res.json({ message: "Precio actualizado"})
+      }else if(precioMax && product.precioMin){
+        product.precioMax = precioMax;
+        product.precio = (precioMax + product.precioMin) / 2 
+        res.json({ message: "Precio Máximo y Precio actualizados"})
+      } else if(precioMin && product.precioMax){
+        product.precioMin = precioMin;
+        product.precio = (product.precioMax + precioMin) / 2
+        res.json({ message: "Precio Mínimo y Precio actualizados"})
+      }
+      if(ingreso){
+        product.stock += ingreso
+      }
+      product.save()
+    }
+  } catch (error: any) {
+    res.json({message: `El producto no pudo actualizarse ${error.message}`})
+  }
+}
 
