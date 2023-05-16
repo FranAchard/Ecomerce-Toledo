@@ -9,7 +9,7 @@ const PORT = process.env.PORT
 
 async function main(){
   conn();
-  chargeOrUpdateDB();
+ // chargeOrUpdateDB();
   app.use('/api/products', productsRouter);
   await app.listen(PORT);
   console.log('server on port', PORT)
