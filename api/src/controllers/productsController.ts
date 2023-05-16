@@ -1,5 +1,6 @@
 import Product from '../models/Product';
 import { Request, Response } from 'express'
+import axios from 'axios';
 import alcohol from '../productosJson/bebidasConAlcohol';
 import sinAlcohol from '../productosJson/bebidasSinAlcohol';
 import congelados from '../productosJson/productosCongelados';
@@ -104,4 +105,3 @@ export async function updateProduct (req: Request, res: Response) {
     res.json({message: `El producto no pudo actualizarse ${error.message}`})
   }
 }
-
