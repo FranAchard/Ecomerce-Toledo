@@ -1,11 +1,11 @@
 import React from "react";
-import Login from "../Login/Login";
-import DarkMode from "../DarkMode/DarkMode";
+import Nav from "./Nav/Nav";
+import Carrousel from "./Carrousel/Carrousel";
 const Home =()=>{
     return (
         <>
-        <Login/>
-        <DarkMode/>
+        <Nav/>
+        <Carrousel/>
         </>
     )
 }
