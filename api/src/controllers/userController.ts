@@ -3,11 +3,12 @@ import { generateToken } from "../config/jwt.config";
 import { User } from "../models/User";
 import bcrypt from "bcrypt";
 import { getTokenData } from "../config/jwt.config";
-import { getTemplate, sendEmail } from "../config/mail.config";
+import { templatePasswordChange, templateSignUp, sendEmail } from "../config/mail.config";
 import { v4 } from "uuid";
 import dotenv from 'dotenv';
 
 dotenv.config()
+const CLIENT = process.env.CLIENT
 const BCRYPT_SALT_ROUNDS = 12;
 
 
@@ -66,7 +67,7 @@ export const createUser = async (req: Request, res: Response) => {
       const code = v4();
       let user = new User({ userName, name, lastName, email, code, password: passwordHashed });
       const token = generateToken({ email, code });
-      const template = getTemplate(name, token);
+      const template = templateSignUp(name, token);
 
       await sendEmail(email, "Confirm your account", template);
       await user.save();
@@ -113,7 +114,7 @@ export const confirm = async (req: Request, res: Response) => {
     }
     user.status = "VERIFIED";
     await user.save();
-    return res.redirect("http://localhost:3000/home");
+    return res.redirect(`${CLIENT}home`);
     //return res.redirect("")
   } catch (error) {
     return res.json({
@@ -123,20 +124,62 @@ export const confirm = async (req: Request, res: Response) => {
   }
 };
 
-// update user
+// reset password
 
-export const updateUser = async (req: Request, res: Response) => {
+export const changePassword = async (req: Request, res: Response) => {
+  console.log("entro al controlador")
   const { email, password } = req.body;
   let passwordHashed = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
   try {
-    await User.findByIdAndUpdate(req.params.id, {
-      // trae el usuario por id y actualiza email y passwor
-      email,
-      password: passwordHashed,
-    });
-    res.json({ message: " User updated successfully" });
+    const user = await User.findById(req.params.id)
+      // trae el usuario por id y actualiza email y verifica que el email entregado coincide con el del usuario
+      if(user?.email === email){
+        let code = user?.code;
+        const token = generateToken({ email, code, passwordHashed });
+        const template = templatePasswordChange(user?.name, token);
+        await sendEmail(email, "Confirm your password change", template);
+      }
+    res.json({ message: `An email was sent to ${email} to confirm the change` });
   } catch (error) {
-    res.json({ message: " Error updating user " });
+    res.json({ message: " Oops something went wrong " });
+  }
+};
+
+export const confirmPasswordChange = async (req: Request, res: Response) => {
+  console.log('entro al controlador')
+  try {
+    const { token } = req.params;
+
+    const data = getTokenData(token);
+
+    if (data === null) {
+      return res.json({
+        success: false,
+        msg: "Error. Data couldn't be acccessed ",
+      });
+    }
+
+    const { email, code, passwordHashed } = data;
+    let user = await User.findOne({
+      email: email,
+    });
+    if (user === null) {
+      return res.json({
+        success: false,
+        msg: "The user doesn't exist",
+      });
+    }
+    if (code !== user.code) {
+      return res.redirect("/error.html");
+    }
+    user.password = passwordHashed;
+    await user.save();
+    return res.redirect(`${CLIENT}home`);
+  } catch (error) {
+    return res.json({
+      success: false,
+      msg: "Error al modficar la contraseña",
+    });
   }
 };
 
