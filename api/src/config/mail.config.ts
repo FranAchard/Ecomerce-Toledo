@@ -5,6 +5,7 @@ dotenv.config()
 
 const EMAIL = process.env.EMAIL
 const EMAIL_PSSWRD = process.env.EMAIL_PSSWRD
+const SERVER = process.env.SERVER
 
 
 const mail ={
@@ -41,7 +42,7 @@ export const sendEmail = async (email: any, subject: any,html: any)=>{
 
 }
 
-export const getTemplate = (email: any,token: any)=>{
+export const templateSignUp = (name: any,token: any)=>{
   return `
       <head>
           <link rel="stylesheet" href="./style.css">
@@ -49,16 +50,16 @@ export const getTemplate = (email: any,token: any)=>{
       
       <div id="email___content">
           <img src="https://www.flickr.com/photos/197399024@N05/52623616952/in/dateposted-public/" alt="">
-          <h2>Hola ${ email }</h2>
+          <h2>Hola ${ name }</h2>
           <p>Para confirmar tu cuenta, ingresa al siguiente enlace</p>
           <a
-              href="http://localhost:3001/api/user/confirm/${token}"
+              href="${SERVER}api/user/confirm/${token}"
               target="_blank"
           >Confirmar Cuenta</a>
       </div>
     `};
 
-    export const getForgotPassTemplate = (email: any,token: any)=>{
+    export const templatePasswordChange = (email: any,token: any)=>{
       return `
           <head>
               <link rel="stylesheet" href="./style.css">
@@ -67,11 +68,11 @@ export const getTemplate = (email: any,token: any)=>{
           <div id="email___content">
               <img src="https://www.flickr.com/photos/197399024@N05/52623616952/in/dateposted-public/" alt="">
               <h2>Hola ${ email }</h2>
-              <p>Para establecer una nueva contraseña has click en el siguiente enlace</p>
+              <p>Haz click en el enlace para confirmar el cambio de tu contraseña</p>
               <a
-                  href="http://localhost:3001/pasword/reset/${token}"
+                  href="${SERVER}api/user/newPassword/${token}"
                   target="_blank"
-              >Establecer nueva contraseña</a>
+              >Autorizar cambio de contraseña</a>
           </div>
         `};
     
@@ -80,6 +81,6 @@ export const getTemplate = (email: any,token: any)=>{
 
     module.exports= {
       sendEmail,
-      getTemplate,
-      getForgotPassTemplate
+      templateSignUp,
+      templatePasswordChange
     }
